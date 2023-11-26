@@ -1,7 +1,5 @@
 local addOnName, SHP = ...
-
 local frame, events = CreateFrame("Frame"), {};
-
 local HasConsumables
 
 frame.defaults = {}
@@ -34,34 +32,31 @@ AllConsumableItems[index][1] = 191378 --Potion of Refreshing Healing 1
 index = index + 1
 AllConsumableItems[index] = 187802 --Cosmic Healing Potion
 
---171267, "Spiritual Healing Potion")
---180317, "Soulful Healing Potion")
---115498, "Ashran Healing Tonic")
---169451, "Abyssal Healing Potion")
---152615, "Astral Healing Potion")
---152494, "Coastal Healing Potion")
---127834, "Ancient Healing Potion")
---36569, "Aged Health Potion")
---109223, "Healing Tonic")
---76097, "Master Healing Potion")
---57191, "Mythical Healing Potion")
---33447, "Runic Healing Potion")
---22850, "Super Rejuvenation Potion")
---43569, "Endless Healing Potion")
---33092, "Healing Potion Injector")
---39671, "Resurgent Healing Potion")
---43531, "Argent Healing Potion")
---32947, "Auchenai Healing Potion")
---22829, "Super Healing Potion")
---13446, "Major Healing Potion")
---858, "Lesser Healing Potion")
---3928, "Superior Healing Potion")
---118, "Minor Healing Potion")
---1710, "Greater Healing Potion")
---929, "Healing Potion")
-
-
-local delayedLoad = false
+--171267, Spiritual Healing Potion
+--180317, Soulful Healing Potion
+--115498, Ashran Healing Tonic
+--169451, Abyssal Healing Potion
+--152615, Astral Healing Potion
+--152494, Coastal Healing Potion
+--127834, Ancient Healing Potion
+--36569, Aged Health Potion
+--109223, Healing Tonic
+--76097, Master Healing Potion
+--57191, Mythical Healing Potion
+--33447, Runic Healing Potion
+--22850, Super Rejuvenation Potion
+--43569, Endless Healing Potion
+--33092, Healing Potion Injector
+--39671, Resurgent Healing Potion
+--43531, Argent Healing Potion
+--32947, Auchenai Healing Potion
+--22829, Super Healing Potion
+--13446, Major Healing Potion
+--858, Lesser Healing Potion
+--3928, Superior Healing Potion
+--118, Minor Healing Potion
+--1710, Greater Healing Potion
+--929, Healing Potion
 
 local macroName = "SmartHealthPot"
 
@@ -76,10 +71,6 @@ end
 
 function events:PLAYER_ENTERING_WORLD(...)
 	--print("Event Triggered: PLAYER_ENTERING_WORLD")
-	frame:RegisterEvent("BAG_UPDATE");
-	
-	if UnitAffectingCombat("player") then return end
-	
 	frame:GetConsumables()
 end
 
@@ -89,36 +80,28 @@ function events:PLAYER_REGEN_ENABLED(...)
 end
 
 function events:BAG_UPDATE(...)
-	--print("Event Triggered: BAG_UPDATE")
-	--if InCombatLockdown() then return end
-	
+	--print("Event Triggered: BAG_UPDATE")	
 	frame:GetConsumables()
 end
 
 frame:RegisterEvent("ADDON_LOADED");
+frame:RegisterEvent("BAG_UPDATE");
 frame:RegisterEvent("PLAYER_REGEN_ENABLED");
 frame:RegisterEvent("PLAYER_ENTERING_WORLD");
 
 function frame:ReadyCheck()
-    for idx, item in ipairs(consumableItems) do
-        local count = GetItemCount(item.id, false, true)
-        if count == 0 then
-            if item.restock then
-                self:Printf("Restock item %s, not found!", item.name)
-            end
-        else
-            self:Printf("Found item %s ( |cFFF54F4F%d|r ), Great", item.name, count)
-        end
-    end
+	
 end
 
+
 function frame:GetConsumables()
-	--if InCombatLockdown() then return end
-	
     HasConsumables = {}
-		
-	for i = 1, #AllConsumableItems do
-		if type(AllConsumableItems[i]) == "table" and #AllConsumableItems[i] > 0 then -- Check if the outer index is a table (array)
+    for i = 1, #AllConsumableItems do
+		if (HasConsumables[1] == 5512 and #HasConsumables >= 2) or (#HasConsumables >= 1 and HasConsumables[1] != 5512) then
+			break
+		end
+        if type(AllConsumableItems[i]) == "table" and #AllConsumableItems[i] > 0 then
+            -- Check if the outer index is a table (array)
 			for j = #AllConsumableItems[i], 1, -1 do
 				local count = GetItemCount(AllConsumableItems[i][j], false, false)
 				if count > 0 then
@@ -126,13 +109,32 @@ function frame:GetConsumables()
 					break
 				end
 			end
-		elseif GetItemCount(AllConsumableItems[i], false, false) > 0 then -- Check if the element itself is the targetValue
-			HasConsumables[#HasConsumables + 1] = AllConsumableItems[i]
-		end
-	end
-		
-	self:UpdateMacro()
+        elseif GetItemCount(AllConsumableItems[i], false, false) > 0 then
+           HasConsumables[#HasConsumables + 1] = AllConsumableItems[i]
+        end
+    end
+    self:UpdateMacro()
 end
+
+--function frame:GetConsumables()
+--    HasConsumables = {}
+--		
+--	for i = 1, #AllConsumableItems do
+--		if type(AllConsumableItems[i]) == "table" and #AllConsumableItems[i] > 0 then -- Check if the outer index is a table (array)
+--			for j = #AllConsumableItems[i], 1, -1 do
+--				local count = GetItemCount(AllConsumableItems[i][j], false, false)
+--				if count > 0 then
+--					HasConsumables[#HasConsumables + 1] = AllConsumableItems[i][j]
+--					break
+--				end
+--			end
+--		elseif GetItemCount(AllConsumableItems[i], false, false) > 0 then -- Check if the element itself is the targetValue
+--			HasConsumables[#HasConsumables + 1] = AllConsumableItems[i]
+--		end
+--	end
+--		
+--	self:UpdateMacro()
+--end
 
 function frame:UpdateMacro()
 	if InCombatLockdown() then return end
