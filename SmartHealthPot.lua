@@ -97,7 +97,7 @@ end
 function frame:GetConsumables()
     HasConsumables = {}
     for i = 1, #AllConsumableItems do
-		if (HasConsumables[1] == 5512 and #HasConsumables >= 2) or (#HasConsumables >= 1 and HasConsumables[1] != 5512) then
+		if (HasConsumables[1] == 5512 and #HasConsumables >= 2) or (#HasConsumables >= 1 and HasConsumables[1] ~= 5512) then
 			break
 		end
         if type(AllConsumableItems[i]) == "table" and #AllConsumableItems[i] > 0 then
@@ -115,26 +115,6 @@ function frame:GetConsumables()
     end
     self:UpdateMacro()
 end
-
---function frame:GetConsumables()
---    HasConsumables = {}
---		
---	for i = 1, #AllConsumableItems do
---		if type(AllConsumableItems[i]) == "table" and #AllConsumableItems[i] > 0 then -- Check if the outer index is a table (array)
---			for j = #AllConsumableItems[i], 1, -1 do
---				local count = GetItemCount(AllConsumableItems[i][j], false, false)
---				if count > 0 then
---					HasConsumables[#HasConsumables + 1] = AllConsumableItems[i][j]
---					break
---				end
---			end
---		elseif GetItemCount(AllConsumableItems[i], false, false) > 0 then -- Check if the element itself is the targetValue
---			HasConsumables[#HasConsumables + 1] = AllConsumableItems[i]
---		end
---	end
---		
---	self:UpdateMacro()
---end
 
 function frame:UpdateMacro()
 	if InCombatLockdown() then return end
